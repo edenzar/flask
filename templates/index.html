@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Control</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 15px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>ESP32 Control</h1>
+
+    <h2>Servo Control</h2>
+    <input type="range" min="-45" max="45" value="0" class="slider" id="servoSlider">
+    <br>
+    <button onclick="updateServo()">Set Servo Position</button>
+
+    <h2>DC Motors Control</h2>
+    <button onclick="controlDC('forward')">Forward</button>
+    <button onclick="controlDC('backward')">Backward</button>
+
+    <script>
+        function updateServo() {
+            var position = document.getElementById('servoSlider').value;
+            $.ajax({
+                type: 'POST',
+                url: '/update_servo',
+                data: { position: position },
+                success: function(response) {
+                    console.log('Servo position updated successfully');
+                },
+                error: function(error) {
+                    console.error('Error updating servo position:', error);
+                }
+            });
+        }
+
+        function controlDC(direction) {
+            $.ajax({
+                type: 'POST',
+                url: '/control_dc',
+                data: { direction: direction },
+                success: function(response) {
+                    console.log('DC motor command sent successfully');
+                },
+                error: function(error) {
+                    console.error('Error sending DC motor command:', error);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
